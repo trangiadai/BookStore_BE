@@ -113,12 +113,9 @@ public class ProductService {
 		if (quantity == null || quantity <= 0) {
 			throw new IllegalArgumentException("Quantity to decrease must be greater than zero");
 		}
-
-		// Verify active product exists first
-		getProductById(productId);
+		getProductById(productId); // Verify active product exists first
 
 		int rowsAffected = productRepository.decreaseStock(productId, quantity);
-
 		if (rowsAffected == 0) {
 			throw new IllegalArgumentException(
 					"Failed to decrease stock for product ID: " + productId + ". Insufficient stock available.");

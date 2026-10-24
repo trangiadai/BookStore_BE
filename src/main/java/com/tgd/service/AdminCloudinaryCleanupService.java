@@ -16,16 +16,13 @@ public class AdminCloudinaryCleanupService {
 	private final CloudinaryService cloudinaryService;
 	private static final Logger log = LoggerFactory.getLogger(AdminCloudinaryCleanupService.class);
 
-	/**
-	 * 1. List all records stuck in FAILED_PERMANENTLY for the Admin UI.
-	 */
+	
+	// List all records stuck in FAILED_PERMANENTLY for the Admin UI.
 	public List<OrphanedFile> getFailedPermanentlyFiles() {
 		return orphanedFileMapper.findFailedPermanentlyFiles();
 	}
 
-	/**
-	 * 2. Manual Retry for a single record triggered by Admin UI button.
-	 */
+	//Manual Retry for a single record triggered by Admin UI button.
 	public boolean retrySingleFile(Long id) {
 		OrphanedFile file = orphanedFileMapper.findById(id);
 		if (file == null) {
@@ -48,7 +45,7 @@ public class AdminCloudinaryCleanupService {
 	}
 
 	/**
-	 * 3. Force resolve a record (marks as MANUALLY_RESOLVED without contacting
+	 * Force resolve a record (marks as MANUALLY_RESOLVED without contacting
 	 * Cloudinary). Useful if the admin deleted the image directly via the
 	 * Cloudinary Console.
 	 */

@@ -21,13 +21,13 @@ import jakarta.validation.constraints.Positive;
 public class AdminCloudinaryController {
 	private final AdminCloudinaryCleanupService adminService;
 
-	// 1. GET /admin/cloudinary-cleanup/failed -> List all permanently failed files
+	// List all permanently failed files
 	@GetMapping("/failed")
 	public ResponseEntity<List<OrphanedFile>> getFailedFiles() {
 		return ResponseEntity.ok(adminService.getFailedPermanentlyFiles());
 	}
 
-	// 2. POST /admin/cloudinary-cleanup/{id}/retry -> Manual Retry Action
+	// Manual Retry Delete Action
 	@PostMapping("/{id}/retry")
 	public ResponseEntity<String> retryFile(
 			@PathVariable @Positive(message = "The id must be greater than 0") Long id) {
@@ -39,7 +39,7 @@ public class AdminCloudinaryController {
 				.body("Manual retry failed. Check last_error field in database.");
 	}
 
-	// 3. PUT /admin/cloudinary-cleanup/{id}/resolve -> Force Resolve
+	// Force Resolve (in case admin delete directly via the Cloudinary Console)
 	@PutMapping("/{id}/resolve")
 	public ResponseEntity<Void> markAsResolved(
 			@PathVariable @Positive(message = "The id must be greater than 0") Long id) {
