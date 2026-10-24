@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tgd.dao.mappers.AdminDashboardMapper">
+
+    <select id="countTotalOrders" resultType="long">
+        SELECT COUNT(*) FROM orders
+    </select>
+
+    <select id="countTotalCustomers" resultType="long">
+        SELECT COUNT(*) FROM accounts
+    </select>
+
+    <select id="sumTotalInventoryCount" resultType="long">
+        SELECT COALESCE(SUM(quantity), 0) FROM products
+    </select>
+
+    <select id="sumTotalRevenue" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE payment_status = 'PAID'
+    </select>
+
+	<select id="getRevenueOverTime" resultType="com.tgd.dto.response.DashboardResponse$RevenueDataPoint">
+        SELECT 
+            <choose>
+                <when test="period == 'daily'">
+                    DATE_FORMAT(created_at, '%Y-%m-%d') AS timeLabel,
+                </when>
+                <when test="period == 'monthly'">
+                    DATE_FORMAT(created_at, '%Y-%m') AS timeLabel,
+                </when>
+                <when test="period == 'quarterly'">
+                    CONCAT(YEAR(created_at), '-Q', QUARTER(created_at)) AS timeLabel,
+                </when>
+                <when test="period == 'yearly'">
+                    DATE_FORMAT(created_at, '%Y') AS timeLabel,
+                </when>
+                <when test="period == 'over_time'">
+                    DATE_FORMAT(created_at, '%Y-%m') AS timeLabel,
+                </when>
+                <otherwise>
+                    DATE_FORMAT(created_at, '%Y-%m-%d') AS timeLabel,
+                </otherwise>
+            </choose>
+            SUM(total_amount) AS revenue
+        FROM orders
+        WHERE payment_status = 'PAID'
+        GROUP BY timeLabel
+        ORDER BY timeLabel ASC
+    </select>
+
+    <select id="getRevenueByCategory" resultType="com.tgd.dto.response.DashboardResponse$CategoryRevenue">
+        SELECT 
+            c.id AS categoryId,
+            c.name AS categoryName,
+            COALESCE(SUM(CASE WHEN o.payment_status = 'PAID' THEN oi.subtotal ELSE 0 END), 0) AS revenue,
+            COALESCE(SUM(CASE WHEN o.payment_status = 'PAID' THEN oi.quantity ELSE 0 END), 0) AS unitsSold
+        FROM categories c
+        LEFT JOIN products p ON c.id = p.category_id
+        LEFT JOIN order_items oi ON p.id = oi.product_id
+        LEFT JOIN orders o ON oi.order_id = o.id
+        GROUP BY c.id, c.name
+        ORDER BY revenue DESC
+    </select>
+
+    <select id="getBestSellingBooks" resultType="com.tgd.dto.response.DashboardResponse$BestSellingBook">
+        SELECT 
+            p.id AS productId,
+            p.name AS productName,
+            SUM(oi.quantity) AS totalUnitsSold,
+            SUM(oi.subtotal) AS totalRevenue
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        JOIN orders o ON oi.order_id = o.id
+        WHERE o.payment_status = 'PAID'
+        GROUP BY p.id, p.name
+        ORDER BY totalUnitsSold DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="getLowStockProducts" resultType="com.tgd.dto.response.DashboardResponse$LowStockProduct">
+        SELECT 
+            id AS productId,
+            name AS productName,
+            quantity AS stockQuantity
+        FROM products
+        WHERE quantity &lt; #{threshold}
+        ORDER BY quantity ASC
+    </select>
+
+</mapper>
