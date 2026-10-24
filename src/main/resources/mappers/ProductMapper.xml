@@ -15,7 +15,7 @@
 		<result property="categoryName" column="product_category_name" />
 		<result property="createdAt" column="product_created_at" />
 
-		<collection property="productImages" ofType="com.tgd.entity.ProductImage" javaType="java.util.ArrayList">
+		<collection property="productImages" ofType="com.tgd.entity.ProductImage">
 			<id property="id" column="product_image_id" />
 			<result property="url" column="product_image_url" />
 			<result property="publicId" column="product_image_public_id" />
@@ -178,8 +178,8 @@
             <if test="sortBy != null and sortDirection != null">
                 ORDER BY ${sortBy.columnName} ${sortDirection.name()}
             </if>
-            LIMIT #{size} OFFSET #{offset}
-        ) page_p
+            LIMIT #{size} OFFSET #{offset}        
+		) page_p
         INNER JOIN products p ON page_p.id = p.id
         LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_deleted = 0
         LEFT JOIN categories c ON p.category_id = c.id

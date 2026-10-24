@@ -6,6 +6,8 @@ spring:
         username: ${DB_USERNAME}
         password: ${DB_PASSWORD}
         driver-class-name: com.mysql.cj.jdbc.Driver
+    mongodb:
+        uri: mongodb://localhost:27017/bookstore_db
     data:
         redis:
             host: localhost
@@ -26,7 +28,14 @@ spring:
             properties:
               spring.json.trusted.packages: "com.tgd.*" # Adjust to match your base package                
         listener:
-            type: batch												
+            type: batch
+    ai:
+        ollama:
+            base-url: http://localhost:11434
+            chat:
+                model: llama3.2
+                options:
+                    temperature: 0.7										
 jwt: 
     secret: ${SECRET_KEY}
     expiration: ${EXPIRATION}
@@ -51,6 +60,7 @@ mybatis:
     mapper-locations: classpath:mappers/*.xml
 logging:
     level:
+        org.springframework.security: DEBUG
         org:
             mybatis: debug
         org.springframework.kafka: info
