@@ -12,7 +12,7 @@ public class ReviewCreateRequest {
 	private Long orderItemId;
 
 	@NotNull(message = "Product ID is required")
-	@NotNull(message = "Product ID must be positive")
+	@Positive(message = "Product ID must be positive")
 	private Long productId;
 
 	@NotNull(message = "Rating is required")

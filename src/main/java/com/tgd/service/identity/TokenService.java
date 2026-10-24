@@ -79,7 +79,7 @@ public class TokenService {
 
 
 	public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder,
-			@Value("${jwt.expiration-ms:86400000}") long expirationInMs, TokenBlacklistService blacklistService) {
+			@Value("${jwt.expiration:86400000}") long expirationInMs, TokenBlacklistService blacklistService) {
 		super();
 		this.jwtEncoder = jwtEncoder;
 		this.jwtDecoder = jwtDecoder;

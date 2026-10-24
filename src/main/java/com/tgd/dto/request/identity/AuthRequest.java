@@ -11,7 +11,7 @@ public class AuthRequest {
 	private String email;
 
 	@NotBlank(message = "Password cannot be blank")
-	@Size(max = 50, min = 8, message = "The maximun length of password is 50 characters, and the minimun is 8 characters")
+	@Size(max = 50, message = "The maximun length of password is 50 characters")
 	private String password;
 
 	public AuthRequest() {
