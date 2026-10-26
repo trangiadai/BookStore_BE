@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.tgd.dao.mappers.ProductImageMapper;
+import com.tgd.dto.response.DeletedImageResponse;
 import com.tgd.entity.ProductImage;
 
 @Repository
@@ -113,6 +114,10 @@ public class ProductImageRepository {
 		param.put("productId", productId);
 
 		return productImageMapper.recoverImagesByProductId(param);
+	}
+	
+	public List<DeletedImageResponse> getAllSoftDeletedImages(){
+		return productImageMapper.getAllSoftDeletedImages();
 	}
 
 	public ProductImageRepository(ProductImageMapper productImageMapper) {

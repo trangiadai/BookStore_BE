@@ -1,5 +1,7 @@
 package com.tgd.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tgd.dto.request.ProductRequest;
 import com.tgd.dto.request.ProductSearchSortFilterRequest;
+import com.tgd.dto.response.DeletedProductResponse;
 import com.tgd.dto.response.ProductResponse;
 import com.tgd.service.ProductService;
 
@@ -53,13 +56,11 @@ public class ProductController {
 		return productService.updateProduct(id, productRequest);
 	}
 
-	// DELETE /products/10 -> Soft Delete
 	@DeleteMapping("/{id}")
 	public int softDeleteProduct(@PathVariable @Positive(message = "Product ID must be greater than 0") Long id) {
 		return productService.softDeleteProduct(id);
 	}
 
-	// DELETE /products/10/hard -> Hard Delete (Admin action)
 	@DeleteMapping("/{id}/hard")
 	public int hardDeleteProduct(@PathVariable @Positive(message = "Product ID must be greater than 0") Long id) {
 		return productService.hardDeleteProduct(id);
@@ -73,6 +74,11 @@ public class ProductController {
 	@GetMapping("/search")
 	public Page<ProductResponse> searchSortFilterProducts(@Valid ProductSearchSortFilterRequest criteria) {
 		return productService.searchSortFilterProducts(criteria);
+	}
+	
+	@GetMapping("/trash")
+	public List<DeletedProductResponse> getAllSoftDeletedProducts() {
+	    return productService.getAllSoftDeletedProducts();
 	}
 
 	public ProductController(ProductService productService) {

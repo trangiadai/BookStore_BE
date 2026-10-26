@@ -13,6 +13,7 @@ import com.tgd.dto.mappers.ProductMapperDTO;
 import com.tgd.dto.request.ProductRequest;
 import com.tgd.dto.request.ProductSearchSortFilterRequest;
 import com.tgd.dto.response.CategoryResponse;
+import com.tgd.dto.response.DeletedProductResponse;
 import com.tgd.dto.response.ProductResponse;
 import com.tgd.entity.Product;
 import com.tgd.repository.ProductRepository;
@@ -120,6 +121,10 @@ public class ProductService {
 			throw new IllegalArgumentException(
 					"Failed to decrease stock for product ID: " + productId + ". Insufficient stock available.");
 		}
+	}
+	
+	public List<DeletedProductResponse> getAllSoftDeletedProducts() {
+	    return productRepository.getAllSoftDeletedProducts();
 	}
 
 	public ProductService(ProductRepository productRepository, ProductImageService productImageService,

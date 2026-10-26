@@ -227,5 +227,14 @@
             #{stat.productId}
         </foreach>
     </update>
-
+	<select id="getAllSoftDeletedProducts" resultType="com.tgd.dto.response.DeletedProductResponse">
+	    SELECT p.id AS id, p.name AS name, c.name AS categoryName, p.selling_price AS sellingPrice,
+	           p.quantity AS quantity, p.deleted_at AS deletedAt,
+	           (SELECT pi.url FROM product_images pi WHERE pi.product_id = p.id
+	            ORDER BY pi.is_primary DESC, pi.display_order ASC, pi.id ASC LIMIT 1) AS coverUrl
+	    FROM products p
+	    LEFT JOIN categories c ON c.id = p.category_id
+	    WHERE p.is_deleted = 1
+	    ORDER BY p.deleted_at DESC, p.id DESC
+	</select>
 </mapper>

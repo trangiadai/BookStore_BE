@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.tgd.dto.response.DeletedProductResponse;
 import com.tgd.entity.Product;
 
 @Mapper
@@ -35,4 +36,6 @@ public interface ProductMapper {
 	int decreaseStock(Map<String, Object> params);
 	
 	void updateBatchStats(Map<String, Object> param);
+	
+	List<DeletedProductResponse> getAllSoftDeletedProducts();
 }

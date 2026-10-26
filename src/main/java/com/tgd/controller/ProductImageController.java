@@ -1,6 +1,7 @@
 package com.tgd.controller;
 
 import java.beans.PropertyEditorSupport;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tgd.dto.response.DeletedImageResponse;
 import com.tgd.entity.ProductImage;
 import com.tgd.service.ProductImageService;
 
@@ -73,6 +76,11 @@ public class ProductImageController {
 			@PathVariable @Positive(message = "Image ID must be greater than 0") Long imageId) {
 		productImageService.setCoverImage(productId, imageId);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/trash")
+	public List<DeletedImageResponse> getAllSoftDeletedImages() {
+	    return productImageService.getAllSoftDeletedImages();
 	}
 
 	public ProductImageController(ProductImageService productImageService) {

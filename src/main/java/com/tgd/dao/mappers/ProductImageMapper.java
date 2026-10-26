@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.tgd.dto.response.DeletedImageResponse;
 import com.tgd.entity.ProductImage;
 
 @Mapper
@@ -37,4 +38,6 @@ public interface ProductImageMapper {
 	int recoverProductImage(Map<String, Object> param);
 
 	int recoverImagesByProductId(Map<String, Object> param);
+	
+	List<DeletedImageResponse> getAllSoftDeletedImages();
 }

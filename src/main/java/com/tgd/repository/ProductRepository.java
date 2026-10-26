@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.tgd.dao.mappers.ProductMapper;
 import com.tgd.dto.request.ProductSearchSortFilterRequest;
 import com.tgd.dto.request.ProductStatUpdate;
+import com.tgd.dto.response.DeletedProductResponse;
 import com.tgd.entity.Product;
 
 @Repository
@@ -137,6 +138,10 @@ public class ProductRepository {
 		param.put("statsList", statsList);
 
 		productMapper.updateBatchStats(param);
+	}
+	
+	public List<DeletedProductResponse> getAllSoftDeletedProducts() {
+	    return productMapper.getAllSoftDeletedProducts();
 	}
 
 	public ProductRepository(ProductMapper productMapper) {

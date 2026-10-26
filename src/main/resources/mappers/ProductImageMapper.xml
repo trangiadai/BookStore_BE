@@ -138,4 +138,13 @@
           AND product_id = #{productId} 
           AND is_deleted = 0
     </update>
+    
+    <select id="getAllSoftDeletedImages" resultType="com.tgd.dto.response.DeletedImageResponse">
+	    SELECT pi.id AS id, pi.url AS url, pi.product_id AS productId, p.name AS productName,
+	           p.is_deleted AS productDeleted, pi.deleted_at AS deletedAt
+	    FROM product_images pi
+	    JOIN products p ON p.id = pi.product_id
+	    WHERE pi.is_deleted = 1
+	    ORDER BY pi.deleted_at DESC, pi.id DESC
+	</select>
 </mapper>

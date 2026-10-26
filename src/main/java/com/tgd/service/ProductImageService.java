@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tgd.dao.mappers.OrphanedFileMapper;
 import com.tgd.dto.mappers.ProductImageMapperDTO;
+import com.tgd.dto.response.DeletedImageResponse;
 import com.tgd.entity.OrphanedFile;
 import com.tgd.entity.ProductImage;
 import com.tgd.enums.OrphanedFileStatus;
@@ -29,21 +30,12 @@ public class ProductImageService {
 
 	@Transactional
 	public int softDeleteProductImage(Long productImageId) {
-	    ProductImage productImage = getProductImageById(productImageId);
-	    if (productImage == null) {
-	        throw new IllegalArgumentException("Not found the product image with id: " + productImageId);
-	    }
-
-	    int result = productImageRepository.softDeleteProductImage(productImageId);
-
-	    // If deleted image was primary, clear its flag and fallback to another remaining image
+		ProductImage productImage = getProductImageById(productImageId);
 	    if (Boolean.TRUE.equals(productImage.getIsPrimary())) {
-	        productImageRepository.clearPrimaryImage(productImage.getProductId());
-	        // Optional: Pick remaining active image and set as new cover
-	        productImageRepository.promoteFirstRemainingImageToPrimary(productImage.getProductId());
+	        throw new IllegalStateException(
+	            "This image is the product's cover. Set another image as the cover first, then delete this one.");
 	    }
-
-	    return result;
+	    return productImageRepository.softDeleteProductImage(productImageId);
 	}
 
 	public int softDeleteImagesByProductId(Long productId) {
@@ -170,6 +162,10 @@ public class ProductImageService {
 
 	public int recoverImagesByProductId(Long productId) {
 	    return productImageRepository.recoverImagesByProductId(productId);
+	}
+	
+	public List<DeletedImageResponse> getAllSoftDeletedImages(){
+		return productImageRepository.getAllSoftDeletedImages();
 	}
 
 	private void rollbackCloudinaryUploads(Set<ProductImage> images) {
