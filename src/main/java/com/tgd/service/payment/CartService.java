@@ -48,11 +48,31 @@ public class CartService {
 		if (product == null) {
 			throw new IllegalArgumentException("Product not found with ID: " + request.getProductId());
 		}
-		if (product.getQuantity() < request.getQuantity()) {
-			throw new IllegalArgumentException("Insufficient stock available for product: " + product.getName());
-		}
 
 		Cart cart = cartRepository.getCartByAccountId(accountId);
+
+		// Quantity of this product that is already in the cart. The request is ADDED to
+		// it (upsertCartItem does quantity = quantity + VALUES(quantity)), so the stock check
+		// must compare the resulting total, not just the quantity of this request.
+		int existingQuantity = 0;
+		if (cart != null && cart.getItems() != null) {
+			existingQuantity = cart.getItems().stream()
+					.filter(item -> request.getProductId().equals(item.getProductId())).mapToInt(CartItem::getQuantity)
+					.sum();
+		}
+
+		int stock = product.getQuantity();
+		if (existingQuantity + request.getQuantity() > stock) {
+			int canStillAdd = Math.max(0, stock - existingQuantity);
+			if (canStillAdd == 0) {
+				throw new IllegalArgumentException("You already have all " + stock + " available copies of \""
+						+ product.getName() + "\" in your cart.");
+			}
+			throw new IllegalArgumentException("Only " + canStillAdd + " more cop" + (canStillAdd == 1 ? "y" : "ies")
+					+ " of \"" + product.getName() + "\" can be added (you already have " + existingQuantity
+					+ " in your cart, " + stock + " in stock).");
+		}
+
 		if (cart == null) {
 			Long cartId = cartRepository.createCart(accountId);
 			cart = new Cart();
@@ -113,36 +133,36 @@ public class CartService {
 
 		response.setItems(itemResponses);
 		response.setGrandTotal(grandTotal);
-		
+
 		return response;
 	}
 
 	@Transactional
 	public CartResponse updateItemQuantity(Jwt jwt, Long productId, Integer newQuantity) {
-	    Long accountId = Long.parseLong(jwt.getSubject());
-	    Cart cart = cartRepository.getCartByAccountId(accountId);
+		Long accountId = Long.parseLong(jwt.getSubject());
+		Cart cart = cartRepository.getCartByAccountId(accountId);
 
-	    if (cart == null) {
-	        throw new IllegalArgumentException("Cart not found");
-	    }
+		if (cart == null) {
+			throw new IllegalArgumentException("Cart not found");
+		}
 
-	    if (newQuantity <= 0) {
-	        cartRepository.removeCartItem(cart.getId(), productId);
-	        return getMyCart(jwt);
-	    }
+		if (newQuantity <= 0) {
+			cartRepository.removeCartItem(cart.getId(), productId);
+			return getMyCart(jwt);
+		}
 
-	    ProductResponse product = productService.getProductById(productId);
-	    if (product == null) {
-	        throw new IllegalArgumentException("Product not found with ID: " + productId);
-	    }
-	    if (product.getQuantity() < newQuantity) {
-	        throw new IllegalArgumentException(
-	                "Requested quantity exceeds available stock (" + product.getQuantity() + ")");
-	    }
+		ProductResponse product = productService.getProductById(productId);
+		if (product == null) {
+			throw new IllegalArgumentException("Product not found with ID: " + productId);
+		}
+		if (product.getQuantity() < newQuantity) {
+			throw new IllegalArgumentException(
+					"Requested quantity exceeds available stock (" + product.getQuantity() + ")");
+		}
 
-	    cartRepository.updateCartItemQuantity(cart.getId(), productId, newQuantity);
+		cartRepository.updateCartItemQuantity(cart.getId(), productId, newQuantity);
 
-	    return getMyCart(jwt);
+		return getMyCart(jwt);
 	}
 
 	public CartService(CartRepository cartRepository, ProductService productService) {
