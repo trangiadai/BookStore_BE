@@ -21,13 +21,13 @@ public class ChatbotController {
 	public ResponseEntity<ChatResponse> chatWithBot(@RequestBody ChatRequest request,
 			@AuthenticationPrincipal Jwt jwt) {
 		String reply = chatbotService.processMessage(jwt, request.getPrompt());
-		return ResponseEntity.ok(new ChatResponse(reply));
+		return ResponseEntity.ok(new ChatResponse(reply, chatbotService.findBooks(reply)));
 	}
 
 	@GetMapping("/history")
 	public ResponseEntity<List<ChatMessage>> getChatHistory(@AuthenticationPrincipal Jwt jwt) {
 		List<ChatMessage> history = chatbotService.getChatHistory(jwt);
-		
+
 		return ResponseEntity.ok(history);
 	}
 

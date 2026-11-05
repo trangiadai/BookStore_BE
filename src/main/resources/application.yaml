@@ -35,7 +35,9 @@ spring:
             chat:
                 model: llama3.2
                 options:
-                    temperature: 0.7										
+                    temperature: 0.2
+                    num-predict: 300   # caps how long an answer can run
+                    keep-alive: 30m    # stops the unload/reload ("Stopping...")									
 jwt: 
     secret: ${SECRET_KEY}
     expiration: ${EXPIRATION}
