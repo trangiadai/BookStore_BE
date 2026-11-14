@@ -43,6 +43,8 @@ jwt:
     expiration: ${EXPIRATION}
 
 app:
+    # Where Stripe sends the customer back after paying (the website, not this API)
+    frontend-url: ${FRONTEND_URL:http://localhost:5173}
     init:
         admin:
             email: ${ADMIN_EMAIL}
@@ -71,3 +73,13 @@ cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME}
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
+
+stripe:
+    api-key: ${STRIPE_API_KEY:}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+    api-version: 2025-09-30.clover
+    # VND is a zero-decimal currency; use e.g. usd if your Stripe account cannot charge VND
+    currency: ${STRIPE_CURRENCY:vnd}
+    # Empty = the payment methods enabled in the Stripe Dashboard. Or list some, e.g. card,us_bank_account
+    payment-method-types: ${STRIPE_PAYMENT_METHOD_TYPES:}
+    session-expiry-minutes: 60

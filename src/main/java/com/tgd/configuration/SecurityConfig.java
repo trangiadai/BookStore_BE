@@ -46,6 +46,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(
 						auth -> auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
 								.permitAll().requestMatchers("/auth/**").permitAll()
+								// Stripe calls this without a token; PaymentService verifies the Stripe-Signature header
+								.requestMatchers(HttpMethod.POST, "/stripe/webhook").permitAll()
 								.requestMatchers("/users/profile").authenticated()
 								.requestMatchers(HttpMethod.GET, "/users", "/users/search").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.GET, "/categories/**", "/products/**").permitAll()
@@ -56,7 +58,6 @@ public class SecurityConfig {
 								.requestMatchers(HttpMethod.DELETE, "/categories/**", "/products/**", "/product-images/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.PATCH, "/products/**", "/product-images/**").hasRole("ADMIN")
 								.requestMatchers(HttpMethod.GET, "/product-images/**").hasRole("ADMIN")
-								.requestMatchers(HttpMethod.GET, "/products/trash").hasRole("ADMIN")
 								.anyRequest().authenticated())
 				.oauth2ResourceServer(
 						oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));

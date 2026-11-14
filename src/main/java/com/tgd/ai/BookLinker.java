@@ -25,7 +25,6 @@ public class BookLinker {
 	private static final Logger log = LoggerFactory.getLogger(BookLinker.class);
 	private static final int CATALOG_SCAN_LIMIT = 1000;
 	private static final int MAX_LINKS_PER_MESSAGE = 10;
-
 	private final ProductService productService;
 
 	/**

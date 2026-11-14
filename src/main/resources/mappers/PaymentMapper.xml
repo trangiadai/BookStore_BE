@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tgd.dao.mappers.PaymentMapper">
+
+    <update id="setStripeSession">
+        UPDATE orders
+        SET stripe_session_id = #{sessionId},
+            payment_pending = 0
+        WHERE id = #{orderId}
+    </update>
+
+    <select id="getStripeSessionId" resultType="string">
+        SELECT stripe_session_id FROM orders WHERE id = #{orderId}
+    </select>
+
+    <update id="markPaymentPending">
+        UPDATE orders
+        SET payment_pending = 1,
+            stripe_session_id = COALESCE(#{sessionId}, stripe_session_id)
+        WHERE id = #{orderId} AND payment_status = 'UNPAID'
+    </update>
+
+    <update id="clearPaymentPending">
+        UPDATE orders SET payment_pending = 0 WHERE id = #{orderId} AND payment_status = 'UNPAID'
+    </update>
+
+    <select id="isPaymentPending" resultType="boolean">
+        SELECT payment_pending = 1 FROM orders WHERE id = #{orderId}
+    </select>
+
+    <!-- The WHERE clause makes this idempotent: Stripe may deliver the same event more than once -->
+    <update id="markPaidIfUnpaid">
+        UPDATE orders
+        SET payment_status = 'PAID',
+            paid_at = NOW(),
+            payment_pending = 0,
+            stripe_session_id = COALESCE(#{sessionId}, stripe_session_id),
+            stripe_payment_intent_id = COALESCE(#{paymentIntentId}, stripe_payment_intent_id)
+        WHERE id = #{orderId} AND payment_status = 'UNPAID'
+    </update>
+
+</mapper>

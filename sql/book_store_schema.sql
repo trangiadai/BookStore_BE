@@ -191,6 +191,14 @@ ADD COLUMN display_order INT NOT NULL DEFAULT 0;
 CREATE UNIQUE INDEX idx_product_primary_image 
 ON product_images (product_id, (CASE WHEN is_primary = 1 THEN 1 ELSE NULL END));
 
+ALTER TABLE orders
+    ADD COLUMN stripe_session_id VARCHAR(255) NULL AFTER payment_method,
+    ADD COLUMN stripe_payment_intent_id VARCHAR(255) NULL AFTER stripe_session_id,
+    ADD COLUMN payment_pending TINYINT(1) NOT NULL DEFAULT 0 AFTER stripe_payment_intent_id,  -- paid on the Stripe page, money not arrived yet
+    ADD COLUMN paid_at DATETIME NULL AFTER payment_pending,
+    ADD INDEX idx_orders_stripe_session (stripe_session_id);
+
+
 START TRANSACTION;
 
 INSERT IGNORE INTO categories (name, description) VALUES
