@@ -1,0 +1,52 @@
+spring:
+    datasource:
+        url: ${DB_URL}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    mongodb:
+        uri: ${MONGODB_URI}
+    data:
+        redis:
+            host: ${REDIS_HOST}
+            port: ${REDIS_PORT}
+            password: ${REDIS_PASSWORD:}
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+        security:
+          protocol: ${KAFKA_SECURITY_PROTOCOL:SSL}
+        ssl:
+          trust-store-location: ${KAFKA_TRUSTSTORE_LOCATION:}
+          trust-store-password: ${KAFKA_TRUSTSTORE_PASSWORD:}
+          key-store-location: ${KAFKA_KEYSTORE_LOCATION:}
+          key-store-password: ${KAFKA_KEYSTORE_PASSWORD:}
+          key-password: ${KAFKA_KEY_PASSWORD:}
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        consumer:
+            group-id: review-processing-group
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            max.poll.records: 100
+            fetch-min-size: 1024
+            fetch-max-wait: 10000ms
+            properties:
+              spring.json.trusted.packages: "com.tgd.*" # Adjust to match your base package                
+        listener:
+            type: batch
+jwt: 
+    secret: ${SECRET_KEY}
+    expiration: ${EXPIRATION}
+
+app:
+    # Where Stripe sends the customer back after paying (the website, not this API)
+    frontend-url: ${FRONTEND_URL}
+    init:
+        admin:
+            email: ${ADMIN_EMAIL}
+            password: ${ADMIN_PASSWORD}
+
+    ai:
+      enabled: false

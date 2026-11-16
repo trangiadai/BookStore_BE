@@ -1,55 +1,6 @@
 spring:
     application:
         name: BookStore_Web_Application
-    datasource:
-        url: ${DB_URL}
-        username: ${DB_USERNAME}
-        password: ${DB_PASSWORD}
-        driver-class-name: com.mysql.cj.jdbc.Driver
-    mongodb:
-        uri: mongodb://localhost:27017/bookstore_db
-    data:
-        redis:
-            host: localhost
-            port: 6379
-    kafka:
-        bootstrap-servers: localhost:9092
-        producer:
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-        consumer:
-            group-id: review-processing-group
-            auto-offset-reset: earliest
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            max.poll.records: 100
-            fetch-min-size: 1024
-            fetch-max-wait: 10000ms
-            properties:
-              spring.json.trusted.packages: "com.tgd.*" # Adjust to match your base package                
-        listener:
-            type: batch
-    ai:
-        ollama:
-            base-url: http://localhost:11434
-            chat:
-                model: llama3.2
-                options:
-                    temperature: 0.2
-                    num-predict: 300   # caps how long an answer can run
-                    keep-alive: 30m    # stops the unload/reload ("Stopping...")									
-jwt: 
-    secret: ${SECRET_KEY}
-    expiration: ${EXPIRATION}
-
-app:
-    # Where Stripe sends the customer back after paying (the website, not this API)
-    frontend-url: ${FRONTEND_URL:http://localhost:5173}
-    init:
-        admin:
-            email: ${ADMIN_EMAIL}
-            password: ${ADMIN_PASSWORD}
-
 server:
     port: 3636
     servlet:
@@ -64,11 +15,11 @@ mybatis:
     mapper-locations: classpath:mappers/*.xml
 logging:
     level:
-        org.springframework.security: DEBUG
+        org.springframework.security: INFO
         org:
-            mybatis: debug
-        org.springframework.kafka: info
-
+            mybatis: WARN
+        org.springframework.kafka: INFO
+#
 cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME}
     api-key: ${CLOUDINARY_API_KEY}
