@@ -14,13 +14,10 @@ spring:
     kafka:
         bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
         security:
-          protocol: ${KAFKA_SECURITY_PROTOCOL:SSL}
-        ssl:
-          trust-store-location: ${KAFKA_TRUSTSTORE_LOCATION:}
-          trust-store-password: ${KAFKA_TRUSTSTORE_PASSWORD:}
-          key-store-location: ${KAFKA_KEYSTORE_LOCATION:}
-          key-store-password: ${KAFKA_KEYSTORE_PASSWORD:}
-          key-password: ${KAFKA_KEY_PASSWORD:}
+          protocol: SASL_SSL
+        properties:
+          sasl.mechanism: SCRAM-SHA-256
+          sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_USERNAME}" password="${KAFKA_PASSWORD}";
         producer:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
